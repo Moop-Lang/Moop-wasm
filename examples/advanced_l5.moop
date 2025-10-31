@@ -1,0 +1,31 @@
+// advanced_l5.moop
+// Advanced L5 Moop program demonstrating complex homoiconic features
+// Shows inheritance, message passing, and natural language compilation
+
+// Complex inheritance hierarchy
+CalculatorProto <- MathProto
+MathProto <- ObjectProto
+StringProto <- ObjectProto
+IoProto <- SystemProto
+DisplayProto <- IoProto
+
+// Reversible computational operations
+calculator -> initialize(0)
+calculator -> add(10)
+calculator -> multiply(2)
+calculator -> subtract(5)
+calculator -> divide(3)
+
+// String processing operations
+string -> create("Calculation result: ")
+string -> append(calculator_result)
+string -> format_number(2)
+
+// Output operations (irreversible)
+display -> clear_screen()
+display -> print_header("L5 Moop Advanced Demo")
+display -> print_message(final_string)
+display -> print_footer()
+
+// Final output
+output -> "L5 Moop advanced compilation completed!"

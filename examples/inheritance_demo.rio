@@ -1,0 +1,25 @@
+// Inheritance Demo - Complex Prototype Hierarchy
+// Demonstrates multi-level inheritance and canonical path resolution
+
+ObjectProto <- BaseProto
+MathProto <- ObjectProto
+CalculatorProto <- MathProto
+ScientificProto <- CalculatorProto
+
+IoProto <- ObjectProto
+FileProto <- IoProto
+NetworkProto <- IoProto
+
+// Method calls on different inheritance levels
+math -> add 1 2
+calc -> multiply result 3
+scientific -> power result 2
+io -> output "Math result: " final
+
+// File operations with inheritance
+file -> readFile "config.txt"
+@irreversible file -> writeFile "output.txt" data
+
+// Network operations
+@io network -> connect "localhost" 8080
+@io network -> sendData connection buffer

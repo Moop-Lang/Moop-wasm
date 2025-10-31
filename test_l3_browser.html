@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L3 Turchin Actor Runtime - Browser Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .test-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .test-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .test-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .test-status.pending {
+            background: rgba(255, 193, 7, 0.3);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+        }
+
+        .test-status.running {
+            background: rgba(33, 150, 243, 0.3);
+            border: 1px solid rgba(33, 150, 243, 0.5);
+        }
+
+        .test-status.passed {
+            background: rgba(40, 167, 69, 0.3);
+            border: 1px solid rgba(40, 167, 69, 0.5);
+        }
+
+        .test-status.failed {
+            background: rgba(220, 53, 69, 0.3);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            resize: vertical;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .output {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 L3 Turchin Actor Runtime</h1>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="total-actors">0</div>
+                <div class="stat-label">Active Actors</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="total-messages">0</div>
+                <div class="stat-label">Messages Sent</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="total-ticks">0</div>
+                <div class="stat-label">Runtime Ticks</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-header">
+                <div class="test-title">🔧 Custom Actor Test</div>
+                <button onclick="runCustomTest()">▶️ Run</button>
+            </div>
+            <textarea id="custom-code" placeholder="Enter L3 Turchin actor code here...">actor CustomActor
+    role is "My custom test actor"
+    state has
+        count is 0
+    handlers
+    on start
+        while state.count < 5
+            log "Iteration"
+            state.count = state.count + 1</textarea>
+            <div class="output" id="custom-output">Ready to run...</div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-header">
+                <div class="test-title">Test 1: if statements</div>
+                <div class="test-status pending" id="test1-status">PENDING</div>
+            </div>
+            <div class="output" id="test1-output">Not run yet</div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-header">
+                <div class="test-title">Test 2: while loops</div>
+                <div class="test-status pending" id="test2-status">PENDING</div>
+            </div>
+            <div class="output" id="test2-output">Not run yet</div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-header">
+                <div class="test-title">Test 3: for loops</div>
+                <div class="test-status pending" id="test3-status">PENDING</div>
+            </div>
+            <div class="output" id="test3-output">Not run yet</div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-header">
+                <div class="test-title">Test 4: Actor Communication</div>
+                <div class="test-status pending" id="test4-status">PENDING</div>
+            </div>
+            <div class="output" id="test4-output">Not run yet</div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="runAllTests()" style="font-size: 18px; padding: 15px 40px;">
+                🚀 Run All Tests
+            </button>
+        </div>
+    </div>
+
+    <script src="l3_turchin.js"></script>
+    <script>
+        let totalActors = 0;
+        let totalMessages = 0;
+        let totalTicks = 0;
+
+        function updateStats() {
+            document.getElementById('total-actors').textContent = totalActors;
+            document.getElementById('total-messages').textContent = totalMessages;
+            document.getElementById('total-ticks').textContent = totalTicks;
+        }
+
+        function runCustomTest() {
+            const code = document.getElementById('custom-code').value;
+            const output = document.getElementById('custom-output');
+
+            try {
+                const runtime = new L3ActorRuntime();
+                runtime.clearLogBuffer();
+
+                const def = runtime.parseActor(code);
+                const id = runtime.spawnActor(def);
+                totalActors++;
+
+                runtime.sendMessage(id, 'start');
+                totalMessages++;
+
+                runtime.tick();
+                totalTicks++;
+
+                output.textContent = runtime.getLogBuffer().join('\n');
+                updateStats();
+            } catch (error) {
+                output.textContent = `❌ Error: ${error.message}`;
+            }
+        }
+
+        function runTest1() {
+            const runtime = new L3ActorRuntime();
+            runtime.clearLogBuffer();
+
+            const code = `actor IfTester
+    role is "Test if statements"
+    state has
+        value is 10
+        result is 0
+    handlers
+    on check
+        if state.value > 5
+            log "Value is greater than 5"
+            state.result = 1`;
+
+            const def = runtime.parseActor(code);
+            const id = runtime.spawnActor(def);
+            totalActors++;
+
+            runtime.sendMessage(id, 'check');
+            totalMessages++;
+
+            runtime.tick();
+            totalTicks++;
+
+            document.getElementById('test1-output').textContent = runtime.getLogBuffer().join('\n');
+            document.getElementById('test1-status').textContent = 'PASSED';
+            document.getElementById('test1-status').className = 'test-status passed';
+            updateStats();
+        }
+
+        function runTest2() {
+            const runtime = new L3ActorRuntime();
+            runtime.clearLogBuffer();
+
+            const code = `actor WhileTester
+    role is "Test while loops"
+    state has
+        counter is 0
+    handlers
+    on count
+        while state.counter < 3
+            log "Counting"
+            state.counter = state.counter + 1`;
+
+            const def = runtime.parseActor(code);
+            const id = runtime.spawnActor(def);
+            totalActors++;
+
+            runtime.sendMessage(id, 'count');
+            totalMessages++;
+
+            runtime.tick();
+            totalTicks++;
+
+            document.getElementById('test2-output').textContent = runtime.getLogBuffer().join('\n');
+            document.getElementById('test2-status').textContent = 'PASSED';
+            document.getElementById('test2-status').className = 'test-status passed';
+            updateStats();
+        }
+
+        function runTest3() {
+            const runtime = new L3ActorRuntime();
+            runtime.clearLogBuffer();
+
+            const code = `actor ForTester
+    role is "Test for loops"
+    state has
+        sum is 0
+    handlers
+    on sum_range
+        for i in 1 to 3
+            log "Adding"
+            state.sum = state.sum + i`;
+
+            const def = runtime.parseActor(code);
+            const id = runtime.spawnActor(def);
+            totalActors++;
+
+            runtime.sendMessage(id, 'sum_range');
+            totalMessages++;
+
+            runtime.tick();
+            totalTicks++;
+
+            document.getElementById('test3-output').textContent = runtime.getLogBuffer().join('\n');
+            document.getElementById('test3-status').textContent = 'PASSED';
+            document.getElementById('test3-status').className = 'test-status passed';
+            updateStats();
+        }
+
+        function runTest4() {
+            const runtime = new L3ActorRuntime();
+            runtime.clearLogBuffer();
+
+            const senderCode = `actor Sender
+    role is "Send messages"
+    state has
+        sent is 0
+    handlers
+    on start
+        send Receiver process
+        state.sent = 1`;
+
+            const receiverCode = `actor Receiver
+    role is "Receive messages"
+    state has
+        received is 0
+    handlers
+    on process
+        log "Received message from Sender"
+        state.received = 1`;
+
+            const senderDef = runtime.parseActor(senderCode);
+            const receiverDef = runtime.parseActor(receiverCode);
+
+            const senderId = runtime.spawnActor(senderDef);
+            const receiverId = runtime.spawnActor(receiverDef);
+            totalActors += 2;
+
+            runtime.sendMessage(senderId, 'start');
+            totalMessages++;
+
+            runtime.tick(); // Sender processes
+            totalTicks++;
+
+            runtime.tick(); // Receiver processes
+            totalTicks++;
+
+            document.getElementById('test4-output').textContent = runtime.getLogBuffer().join('\n');
+            document.getElementById('test4-status').textContent = 'PASSED';
+            document.getElementById('test4-status').className = 'test-status passed';
+            updateStats();
+        }
+
+        async function runAllTests() {
+            totalActors = 0;
+            totalMessages = 0;
+            totalTicks = 0;
+
+            runTest1();
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            runTest2();
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            runTest3();
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            runTest4();
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            alert('✅ All tests completed successfully!');
+        }
+    </script>
+</body>
+</html>

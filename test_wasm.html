@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>August-Rio WebAssembly Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .status.loading {
+            background: rgba(255, 193, 7, 0.3);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+        }
+
+        .status.ready {
+            background: rgba(40, 167, 69, 0.3);
+            border: 1px solid rgba(40, 167, 69, 0.5);
+        }
+
+        .status.error {
+            background: rgba(220, 53, 69, 0.3);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            resize: vertical;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 August-Rio WebAssembly Compiler</h1>
+
+        <div id="status" class="status loading">
+            🔄 Initializing WebAssembly...
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="wasm-size">31KB</div>
+                <div class="stat-label">Total Size</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="compile-time">--ms</div>
+                <div class="stat-label">Compile Time</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="hrir-cells">--</div>
+                <div class="stat-label">HRIR Cells</div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">✅ Parsing</div>
+            <div class="feature">✅ Inheritance</div>
+            <div class="feature">✅ HRIR</div>
+            <div class="feature">✅ L5 Moop</div>
+            <div class="feature">✅ Time Travel</div>
+            <div class="feature">✅ WebAssembly</div>
+        </div>
+
+        <h3>📝 Moop Source Code</h3>
+        <textarea id="moop-input" placeholder="Enter Moop code here...
+Example:
+display -> 'Hello from WebAssembly!'
+calculator <-> add(5, 3)">display -> 'Hello from WebAssembly!'
+calculator <-> add(5, 3)</textarea>
+
+        <div>
+            <button id="compile-btn" onclick="compileMoop()">🔨 Compile</button>
+            <button id="version-btn" onclick="showVersion()">ℹ️ Version</button>
+            <button id="capabilities-btn" onclick="showCapabilities()">⚙️ Capabilities</button>
+            <label>
+                <input type="checkbox" id="l5-enhanced" checked>
+                Enable L5 Enhanced Mode
+            </label>
+        </div>
+
+        <h3>📤 Compilation Output</h3>
+        <div id="output" class="output">Ready to compile...</div>
+    </div>
+
+    <script type="module">
+        let AugustRioModule = null;
+        let compileStartTime = 0;
+
+        // Initialize WebAssembly module
+        async function initWasm() {
+            try {
+                const statusDiv = document.getElementById('status');
+                statusDiv.textContent = '🔄 Loading WebAssembly...';
+                statusDiv.className = 'status loading';
+
+                // Import the WebAssembly module
+                const module = await import('./august_rio.js');
+                AugustRioModule = await module.default();
+
+                statusDiv.textContent = '✅ WebAssembly Ready!';
+                statusDiv.className = 'status ready';
+
+                // Enable buttons
+                document.getElementById('compile-btn').disabled = false;
+                document.getElementById('version-btn').disabled = false;
+                document.getElementById('capabilities-btn').disabled = false;
+
+                // Show version on load
+                showVersion();
+
+            } catch (error) {
+                console.error('WebAssembly initialization failed:', error);
+                document.getElementById('status').textContent = '❌ WebAssembly Failed: ' + error.message;
+                document.getElementById('status').className = 'status error';
+            }
+        }
+
+        // Compile Moop code
+        async function compileMoop() {
+            if (!AugustRioModule) {
+                alert('WebAssembly not ready yet!');
+                return;
+            }
+
+            const input = document.getElementById('moop-input').value;
+            const l5Enabled = document.getElementById('l5-enhanced').checked;
+
+            const outputDiv = document.getElementById('output');
+            outputDiv.textContent = '🔄 Compiling...';
+
+            compileStartTime = performance.now();
+
+            try {
+                // Prepare options
+                const options = {
+                    l5_enhanced: l5Enabled
+                };
+
+                // Call WebAssembly function
+                const resultPtr = AugustRioModule._compile_moop(
+                    AugustRioModule.stringToUTF8OnStack(input),
+                    AugustRioModule.stringToUTF8OnStack(JSON.stringify(options))
+                );
+
+                if (resultPtr === 0) {
+                    throw new Error('Compilation failed');
+                }
+
+                // Get result
+                const resultJson = AugustRioModule.UTF8ToString(resultPtr);
+                const result = JSON.parse(resultJson);
+
+                // Free WebAssembly memory
+                AugustRioModule._free_result(resultPtr);
+
+                // Update UI
+                const compileTime = (performance.now() - compileStartTime).toFixed(1);
+                document.getElementById('compile-time').textContent = compileTime + 'ms';
+                document.getElementById('hrir-cells').textContent = result.hrir_cells || '--';
+
+                // Format output
+                let output = `🎉 Compilation Successful!\n\n`;
+                output += `Source: "${result.source}"\n`;
+                output += `L5 Enhanced: ${result.l5_enhanced}\n`;
+                output += `HRIR Cells: ${result.hrir_cells}\n`;
+                output += `Compile Time: ${result.compilation_time_ms}ms\n`;
+                output += `Capabilities: ${result.capabilities.join(', ')}\n\n`;
+                output += `Message: ${result.message}\n`;
+
+                outputDiv.textContent = output;
+
+            } catch (error) {
+                outputDiv.textContent = `❌ Compilation Error: ${error.message}`;
+                console.error('Compilation error:', error);
+            }
+        }
+
+        // Show version
+        function showVersion() {
+            if (!AugustRioModule) return;
+
+            const versionPtr = AugustRioModule._get_version();
+            const version = AugustRioModule.UTF8ToString(versionPtr);
+
+            const outputDiv = document.getElementById('output');
+            outputDiv.textContent = `ℹ️ August-Rio Version: ${version}`;
+        }
+
+        // Show capabilities
+        function showCapabilities() {
+            if (!AugustRioModule) return;
+
+            const capsPtr = AugustRioModule._get_capabilities();
+            const capsJson = AugustRioModule.UTF8ToString(capsPtr);
+            const caps = JSON.parse(capsJson);
+
+            let output = `⚙️ August-Rio Capabilities:\n\n`;
+            Object.entries(caps).forEach(([key, value]) => {
+                const status = value ? '✅' : '❌';
+                output += `${status} ${key}: ${value}\n`;
+            });
+
+            document.getElementById('output').textContent = output;
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', initWasm);
+
+        // Make functions global for button onclick
+        window.compileMoop = compileMoop;
+        window.showVersion = showVersion;
+        window.showCapabilities = showCapabilities;
+    </script>
+</body>
+</html>

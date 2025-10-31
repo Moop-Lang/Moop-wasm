@@ -1,0 +1,20 @@
+// Sample Rio+RioVN Program
+// Demonstrates unified syntax with inheritance and message passing
+
+ObjectProto <- BaseProto
+MathProto <- ObjectProto
+StringProto <- ObjectProto
+IoProto <- SystemProto
+
+// R-term operations (reversible by default)
+math -> add 10 5
+math -> multiply result 2
+string -> concat "Result: " result
+
+// D-term operations with explicit tags
+@io io -> output message
+@irreversible file -> writeToDisk "output.txt" message
+
+// Inheritance demonstration
+CalculatorProto <- MathProto
+ScientificProto <- CalculatorProto

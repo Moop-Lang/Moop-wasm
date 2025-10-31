@@ -1,0 +1,16 @@
+// Basic Math Example - Rio + RioVN Unified Syntax
+// Demonstrates reversible R-term operations by default
+
+MathProto <- ObjectProto
+CalculatorProto <- MathProto
+IoProto <- SystemProto
+
+// R-term operations (reversible by default)
+math -> add 5 3
+calc -> multiply result 2
+io -> output "Result: " result
+
+// More complex expressions
+math -> subtract 10 4
+calc -> divide 20 5
+io -> output "Division result: " quotient

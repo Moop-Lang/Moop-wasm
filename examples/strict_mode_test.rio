@@ -1,0 +1,31 @@
+// Strict Mode Test - Explicit D-term Tagging Required
+// This file demonstrates what passes/fails in strict mode
+
+MathProto <- ObjectProto
+IoProto <- SystemProto
+FileProto <- IoProto
+
+// ✅ These pass in all modes (R-term operations)
+math -> add 5 3
+math -> multiply 4 2
+math -> subtract 10 7
+
+// ❌ This would FAIL in strict mode (D-term without explicit tag)
+// io -> output "This would fail in strict mode"
+
+// ✅ This passes in strict mode (explicit D-term tag)
+@io io -> output "This passes in strict mode"
+
+// ✅ File operations with explicit tags
+@irreversible file -> createFile "newfile.txt"
+@io file -> writeFile "newfile.txt" "content"
+@irreversible file -> deleteFile "newfile.txt"
+
+// ✅ Network operations with explicit tags
+@io network -> initializeSocket
+@io network -> bindSocket 8080
+@io network -> listenForConnections
+
+// Complex expression mixing R-term and D-term
+result <- math -> add 5 3
+@io io -> output "Result: " result

@@ -1,0 +1,105 @@
+# L3 Turchin - Correct Arrow Syntax Examples
+
+## Example 1: Simple Counter (Arrow syntax)
+actor Counter
+    role is "Count messages"
+
+    state has
+        count is 0
+
+    on increment
+        state.count is state.count + 1
+        self -> log "Incremented!"
+
+## Example 2: Conditional with Arrows
+actor Guard
+    role is "Access control"
+
+    state has
+        allowed is false
+
+    on check
+        if state.allowed
+            self -> log "Access granted"
+        else
+            self -> log "Access denied"
+
+## Example 3: While Loop with Arrow Messages
+actor Repeater
+    role is "Repeat until done"
+
+    state has
+        count is 0
+
+    on start
+        while state.count < 5
+            self -> log "Counting"
+            state.count is state.count + 1
+
+## Example 4: For Loop with Arrows
+actor Summer
+    role is "Sum numbers"
+
+    state has
+        total is 0
+
+    on calculate
+        for i in 1 to 10
+            state.total is state.total + i
+            self -> log "Adding"
+
+## Example 5: Multi-Actor with Arrows
+actor Pinger
+    role is "Send ping"
+
+    state has
+        sent is 0
+
+    on start
+        Ponger -> ping
+        state.sent is 1
+
+actor Ponger
+    role is "Respond to ping"
+
+    state has
+        received is 0
+
+    on ping
+        self -> log "Received ping!"
+        state.received is 1
+        Pinger -> pong
+
+## Example 6: D-term Tagged Operations
+actor Logger
+    role is "Log to file"
+
+    state has
+        messages is 0
+
+    on log_message
+        @io display -> print "Logging..."
+        @irreversible file -> write "log.txt"
+        state.messages is state.messages + 1
+
+## Example 7: Inheritance (S-term)
+actor AdvancedCounter <- Counter
+    role is "Counter with max limit"
+
+    state has
+        max is 100
+
+    on increment
+        if state.count < state.max
+            state.count is state.count + 1
+            self -> log "Incremented"
+        else
+            @io display -> print "Max reached!"
+
+## Key Syntax Rules:
+1. Assignment uses 'is' not '='
+2. Messages use '->' arrow
+3. Inheritance uses '<-' arrow
+4. D-term operations need @io or @irreversible tags
+5. Blocks end with dedent (no 'end' keyword)
+6. Whitespace matters!

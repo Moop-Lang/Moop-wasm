@@ -1,0 +1,16 @@
+// hello_l5.moop
+// Example L5 Moop program demonstrating natural language homoiconicity
+// This file uses the natural language syntax that gets compiled to homoiconic structures
+
+// Inheritance relationships (homoiconic)
+MathProto <- ObjectProto
+StringProto <- ObjectProto
+DisplayProto <- SystemProto
+
+// Message passing operations (reversible)
+math -> add(5, 3)
+math -> multiply(result, 2)
+string -> concat("Result: ", final_result)
+
+// Output (irreversible side effect)
+output -> "Hello from L5 Moop natural language!"

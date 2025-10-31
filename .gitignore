@@ -1,0 +1,43 @@
+# Compiled binaries
+*.o
+*.so
+*.dylib
+*.wasm
+*.dSYM/
+
+# Executables
+rio_riovn_compiler
+api_example
+consistency_demo
+hrir_demo
+test_l3_turchin
+test_control_flow_c
+test_arrow_syntax
+test_arrow_messages
+test_surface
+librio.so
+
+# Keep test source files and HTML
+!test_*.c
+!test_*.js
+!test_*.html
+!test_*.sh
+
+# Build artifacts
+*.js
+!l3_turchin.js
+
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+venv/

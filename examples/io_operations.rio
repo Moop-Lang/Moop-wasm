@@ -1,0 +1,19 @@
+// I/O Operations Example - D-term Boundaries
+// Demonstrates explicit D-term tagging for irreversible operations
+
+IoProto <- SystemProto
+FileProto <- IoProto
+NetworkProto <- SystemProto
+
+// R-term operations (reversible)
+io -> formatMessage "Hello" "World"
+file -> getFileSize "data.txt"
+
+// D-term operations (require explicit tags)
+@io io -> writeToConsole message
+@irreversible file -> writeToDisk "output.txt" content
+@io network -> sendPacket buffer size
+
+// Mixed operations
+result <- io -> readFromConsole
+@irreversible file -> appendToLog "access.log" result
