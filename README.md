@@ -281,6 +281,36 @@ io -> output final
 - **Medium Term**: Complete actor runtime with L3 time-travel debugging
 - **Long Term**: IDE integration with visual time-travel debugging
 
+## Theoretical Foundations
+
+This implementation is grounded in rigorous theoretical foundations documented in **[moop-docs](https://github.com/Moop-Lang/Moop-docs)**:
+
+### Phase 1.5: Advanced Computational Architecture
+
+- **[Refined UME Foundation](https://github.com/Moop-Lang/Moop-docs/blob/main/REFINED_UME_FOUNDATION.md)** - R+Ξ (autopoiesis) and S+D (adaptation) duality
+- **[Amplituhedron Computation](https://github.com/Moop-Lang/Moop-docs/blob/main/AMPLITUHEDRON_COMPUTATION.md)** - Geometric optimization hypothesis
+- **[Quadruple Synergy](https://github.com/Moop-Lang/Moop-docs/blob/main/QUADRUPLE_SYNERGY.md)** - How homoiconicity, reversibility, amplituhedron math, and autopoiesis synergize
+- **[Autopoietic-Adaptive Duality](https://github.com/Moop-Lang/Moop-docs/blob/main/AUTOPOIETIC_ADAPTIVE_DUALITY.md)** - Mathematics of the Ξ ↔ Ξ′ feedback loop
+
+### Key Theoretical Concepts Implemented Here
+
+- **Homoiconicity**: L1 HRIR cells are self-describing, enabling runtime introspection and modification
+- **Reversibility**: L1 reversible tape with checkpoint/rollback capabilities
+- **Dual Memory**: System-facing reversible loops (L1) + user-facing conventional memory (L2b+)
+- **Autopoietic Substrate**: System maintains its organization through the R+Ξ subsystem
+- **Adaptive Layer**: D-term boundaries enable evolution through S+D interactions
+
+**Performance expectations** (from theoretical analysis):
+- Conservative: 2-5× from adaptive optimization
+- Realistic: 2-10× for typical code
+- Optimistic: Up to 25× for highly structured problems (if amplituhedron hypothesis validated)
+
+## Related Implementations
+
+- **[moop-embedded](https://github.com/Moop-Lang/moop-embedded)** - Quantum-ready embedded runtime (40KB, no GC)
+- **[moop-esp32](https://github.com/Moop-Lang/moop-esp32)** - Hardware-tested ESP32-C3 firmware
+- **[moop-docs](https://github.com/Moop-Lang/Moop-docs)** - Comprehensive documentation and theory
+
 ## Contributing
 
 This project embodies the philosophy of **minimization through conceptual unification, synergy, and orthogonality**. All changes must maintain:
